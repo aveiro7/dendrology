@@ -1,3 +1,19 @@
 <!DOCTYPE html>
 <title>Drzewo genealogiczne</title>
-{% block body %}{% endblock %}
+<div class=page>
+    <a href="{{ url_for('show_tree') }}">Stwórz własne drzewo</a>
+    <div class=metanav>
+    {% if not session.logged_in %}
+        <a href="{{ url_for('login') }}">Log in</a> |
+        <a href="{{ url_for('register') }}">Register</a>
+    {% else %}
+        Hello, {{ session.username }} |
+        <a href="{{ url_for('logout') }}">Log out</a> |
+        <a href="{{ url_for('settings') }}">Settings</a>
+    {% endif %}
+    </div>
+    {% for message in get_flashed_messages() %}
+        <div class=flash>{{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
+</div>
