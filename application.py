@@ -1,14 +1,12 @@
 from flask import Flask, render_template, g, request, flash, url_for, redirect, session
 import os
 import sqlite3
+from mail_sender import send_mail
+from config import set_config
 
 app = Flask(__name__)
-app.config.from_object(__name__)
-
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'trees.db'),
-    SECRET_KEY='development_key'
-))
+app.config['DATABASE']=os.path.join(app.root_path, 'trees.db')
+set_config(app)
 
 def connect_db():
     rv = sqlite3.connect(app.config['DATABASE'])
@@ -45,7 +43,7 @@ def show_tree():
         db = get_db()
         query = '''select *
                 from person
-                where id = ?
+                where tree = ?
                 '''
         cur = db.execute(query, [session['user_id']])
         people = cur.fetchall()
@@ -126,9 +124,73 @@ def logout():
         flash('Zostales wylogowany')
     return redirect(url_for('show_tree'))
 
-@app.route('/add')
-def add_new_person():
-    return "nowa osoba"
+@app.route('/add', methods=['GET', 'POST'])
+def add_person():
+    error = None
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        birth_date = request.form['birth_date']
+
+        db = get_db()
+        query = '''insert into person
+                (first_name, last_name, birth_year, tree)
+                values (?, ?, ?, ?)'''
+        db.execute(query, [first_name, last_name, birth_date, session['user_id']])
+        db.commit()
+        flash('Osoba pomyslnie dodana')
+        return redirect(url_for('show_tree'))
+    else:
+        db = get_db()
+        query = '''select first_name, last_name
+                from person
+                '''
+        cur = db.execute(query)
+        people = cur.fetchall()
+        return render_template('add_person.html', error=error, people=people)
+
+@app.route('/edit_person/<person_id>', methods=['GET', 'POST'])
+def edit_person(person_id):
+    db = get_db()
+
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        birth_date = request.form['birth_date']
+
+        query = '''update person
+                set first_name = ?,
+                last_name = ?,
+                birth_year = ?
+                where id = ?'''
+
+        db.execute(query, [first_name, last_name, birth_date, person_id])
+        db.commit()
+        flash("Zmieniono dane")
+        return redirect(url_for('show_tree'))
+    query = '''select *
+            from person
+            where id = ?
+            '''
+    cur = db.execute(query, [person_id])
+    result = cur.fetchone()
+    return render_template('edit_person.html', person=result)
+
+@app.route('/delete_person/<person_id>')
+def delete_person(person_id):
+    db = get_db()
+    query = '''delete from person
+            where id = ?'''
+    db.execute(query, [person_id])
+    db.commit()
+    flash("Usunieto wpis")
+    return redirect(url_for('show_tree'))
+
+@app.route('/send_email')
+def send_email():
+    send_mail(app, "", "asdf")
+    flash("Wyslano wiadomosc")
+    return redirect(url_for('show_tree'))
 
 if __name__ == "__main__":
     app.run()

@@ -1,3 +1,10 @@
+drop table if exists config;
+create table config (
+    id integer primary key autoincrement,
+    key text not null,
+    value text not null
+);
+
 drop table if exists user;
 create table user (
     id integer primary key autoincrement,
