@@ -1,9 +1,10 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+
 import sqlite3
-from application import get_db
+from db import connect_db
 
-def set_mail_config(app):
-    db = get_db()
-
+def set_mail_config(app, db):
     query = '''select value
             from config
             where key = ?'''
@@ -20,9 +21,7 @@ def set_mail_config(app):
         MAIL_PASSWORD=mail_password
         ))
 
-def set_cookie_config(app):
-    db = get_db()
-
+def set_cookie_config(app, db):
     query = '''select value
             from config
             where key = ?'''
@@ -31,5 +30,8 @@ def set_cookie_config(app):
     app.config['SECRET_KEY'] = secret_key
 
 def set_config(app):
-    set_cookie_config(app)
-    set_mail_config(app)
+    db = connect_db(app.config['DATABASE'])
+
+    set_cookie_config(app, db)
+    set_mail_config(app, db)
+    db.close()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, g, request, flash, url_for, redirect, session
@@ -6,23 +7,12 @@ import sqlite3
 from mail_sender import send_mail
 from config import set_config
 from . import app
-
-
-def connect_db():
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
+from db import init_db, connect_db
 
 def get_db():
     if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
+        g.sqlite_db = connect_db(app.config['DATABASE'])
     return g.sqlite_db
-
-def init_db():
-    db = get_db()
-    with app.open_resource('schema.sql', mode='r') as f:
-        db.cursor().executescript(f.read())
-    db.commit()
 
 @app.cli.command('initdb')
 def initdb_command():
@@ -34,9 +24,6 @@ def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
 
-
-########################## View functions ##################3
-
 @app.route('/')
 def show_tree():
     if session.get('logged_in'):
@@ -45,12 +32,11 @@ def show_tree():
                 from person
                 where tree = ?
                 '''
-        cur = db.execute(query, [session['user_id']])
-        people = cur.fetchall()
-
-        return render_template('show_tree.html', people=people)
+        people = db.execute(query, [session['user_id']]).fetchall()
     else:
-        return render_template('show_tree.html')
+        people = None
+
+    return render_template('show_tree.html', people=people)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -192,11 +178,5 @@ def send_email():
     flash(u"Wysłano wiadomość")
     return redirect(url_for('show_tree'))
 
-
-def main():
-    app.config['DATABASE'] = os.path.join(app.root_path, 'trees.db')
-    set_config(app)
-    app.run()
-
 if __name__ == "__main__":
-    main()
+    app.run()
