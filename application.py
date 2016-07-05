@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask, render_template, g, request, flash, url_for, redirect, session
 import os
 import sqlite3
@@ -61,21 +63,21 @@ def register():
 
         db = get_db()
         query = '''select *
-                from users
+                from user
                 where username = ?'''
         cur = db.execute(query, [username])
         result = cur.fetchone()
 
-        if result is None:
-            error = "Ta nazwa uzytkownika jest juz zajeta"
+        if result:
+            error = "Ta nazwa użytkownika jest już zajęta"
         else:
-            query = '''insert into users (username, password)
+            query = '''insert into user (username, password)
                     values (?, ?)'''
             db.execute(query, [username, password])
             db.commit()
 
             query = '''select id
-                    from users
+                    from user
                     where username = ?'''
             cur = db.execute(query, [username])
             user_id = cur.fetchone()[0]
@@ -102,16 +104,16 @@ def login():
         result = cur.fetchone()
 
         if result is None:
-            error = "Nie ma takiego uzytkownika"
+            error = "Nie ma takiego użytkownika"
         else:
             pwd = result[1]
             if password != pwd:
-                error = "Haslo jest nieprawidlowe"
+                error = "Hasło jest nieprawidłowe"
             else:
                 session['logged_in'] = True
                 session['user_id'] = result[0]
                 session['username'] = username
-                flash('Jestes zalogowany')
+                flash(u'Jesteś zalogowany')
                 return redirect(url_for('show_tree'))
     return render_template('login.html', error=error)
 
@@ -121,7 +123,7 @@ def logout():
         session.pop('logged_in', None)
         session.pop('user_id', None)
         session.pop('username', None)
-        flash('Zostales wylogowany')
+        flash(u'Zostałeś wylogowany')
     return redirect(url_for('show_tree'))
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -138,7 +140,7 @@ def add_person():
                 values (?, ?, ?, ?)'''
         db.execute(query, [first_name, last_name, birth_date, session['user_id']])
         db.commit()
-        flash('Osoba pomyslnie dodana')
+        flash(u'Osoba pomyślnie dodana')
         return redirect(url_for('show_tree'))
     else:
         db = get_db()
@@ -183,13 +185,13 @@ def delete_person(person_id):
             where id = ?'''
     db.execute(query, [person_id])
     db.commit()
-    flash("Usunieto wpis")
+    flash(u"Usunięto wpis")
     return redirect(url_for('show_tree'))
 
 @app.route('/send_email')
 def send_email():
     send_mail(app, "", "asdf")
-    flash("Wyslano wiadomosc")
+    flash(u"Wysłano wiadomość")
     return redirect(url_for('show_tree'))
 
 if __name__ == "__main__":
