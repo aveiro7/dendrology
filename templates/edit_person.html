@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <form method=post action="{{ url_for('edit_person', person_id=person.id) }}">
+    <ul>
+        <li>
+            <label>Imię</label>
+            <input type=text name=first_name value="{{ person.first_name }}">
+        </li>
+        <li>
+            <label>Nazwisko</label>
+            <input type=text name=last_name value="{{ person.last_name }}">
+        </li>
+        <li>
+            <label>Data urodzenia</label>
+            <input type=date name=birth_date value="{{ person.birth_year }}">
+        </li>
+        <li>
+            <input type=submit value="Zapisz zmiany">
+        </li>
+    </ul>
+    </form>
+{% endblock %}

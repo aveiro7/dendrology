@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block body %}
+    {% if session.logged_in %}
+        <form method=post action="{{ url_for('add_person') }}">
+        <ul>
+            <li><label>Imię</label><input type=text name=first_name></li>
+            <li><label>Nazwisko</label><input type=text name=last_name></li>
+            <li><label>Data urodzenia</label><input type=date name=birth_date></li>
+            <li><input type=submit value="Dodaj"></li>
+        </ul>
+        </form>
+
+    {% else %}
+        Nie jesteś zalogowany.
+        <a href="{{ url_for('login') }}">Zaloguj się</a>
+        <a href="{{ url_for('register') }}">Zarejestruj się</a>
+
+    {% endif %}
+{% endblock %}
