@@ -40,7 +40,6 @@ def show_tree():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    error = None
     if request.method == 'POST':
         username = request.form['username_r']
         password = request.form['password_r']
@@ -54,28 +53,30 @@ def register():
 
         if result:
             error = "Ta nazwa użytkownika jest już zajęta"
-        else:
-            query = '''insert into user (username, password)
-                    values (?, ?)'''
-            db.execute(query, [username, password])
-            db.commit()
+            return render_template('register.html', error=error)
+        
+        query = '''insert into user (username, password)
+                values (?, ?)'''
+        db.execute(query, [username, password])
+        db.commit()
 
-            query = '''select id
-                    from user
-                    where username = ?'''
-            cur = db.execute(query, [username])
-            user_id = cur.fetchone()[0]
-            session['logged_in'] = True
-            session['user_id'] = user_id
-            session['username'] = username
-            flash('Utworzono nowe konto')
-            return redirect(url_for('show_tree'))
-    return render_template('register.html', error=error)
+        query = '''select id
+                from user
+                where username = ?'''
+        cur = db.execute(query, [username])
+        user_id = cur.fetchone()[0]
+        session['logged_in'] = True
+        session['user_id'] = user_id
+        session['username'] = username
+        flash('Utworzono nowe konto')
+        return redirect(url_for('show_tree'))
+
+    else:
+        return render_template('register.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
     if request.method == 'POST':
         username = request.form['username_l']
         password = request.form['password_l']
@@ -84,22 +85,26 @@ def login():
         query = '''select id, password
                 from user
                 where username = ?'''
-        cur = db.execute(query, [username])
-        result = cur.fetchone()
-
+        result = db.execute(query, [username]).fetchone()
+        
         if result is None:
             error = "Nie ma takiego użytkownika"
-        else:
-            pwd = result[1]
-            if password != pwd:
-                error = "Hasło jest nieprawidłowe"
-            else:
-                session['logged_in'] = True
-                session['user_id'] = result[0]
-                session['username'] = username
-                flash(u'Jesteś zalogowany')
-                return redirect(url_for('show_tree'))
-    return render_template('login.html', error=error)
+            return render_template('login.html', error=error)
+
+        user_id, pwd = result
+
+        if password != pwd:
+            error = "Hasło jest nieprawidłowe"
+            return render_template('login.html', error=error)
+
+        session['logged_in'] = True
+        session['user_id'] = user_id
+        session['username'] = username
+        flash(u'Jesteś zalogowany')
+        return redirect(url_for('show_tree'))
+
+    else:
+        return render_template('login.html')
 
 @app.route('/logout')
 def logout():
@@ -126,6 +131,7 @@ def add_person():
         db.commit()
         flash(u'Osoba pomyślnie dodana')
         return redirect(url_for('show_tree'))
+
     else:
         db = get_db()
         query = '''select first_name, last_name
@@ -154,13 +160,15 @@ def edit_person(person_id):
         db.commit()
         flash("Zmieniono dane")
         return redirect(url_for('show_tree'))
-    query = '''select *
-            from person
-            where id = ?
-            '''
-    cur = db.execute(query, [person_id])
-    result = cur.fetchone()
-    return render_template('edit_person.html', person=result)
+
+    else:
+        query = '''select *
+                from person
+                where id = ?
+                '''
+        cur = db.execute(query, [person_id])
+        result = cur.fetchone()
+        return render_template('edit_person.html', person=result)
 
 @app.route('/delete_person/<person_id>')
 def delete_person(person_id):
