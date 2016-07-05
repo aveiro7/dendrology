@@ -5,10 +5,8 @@ import os
 import sqlite3
 from mail_sender import send_mail
 from config import set_config
+from . import app
 
-app = Flask(__name__)
-app.config['DATABASE']=os.path.join(app.root_path, 'trees.db')
-set_config(app)
 
 def connect_db():
     rv = sqlite3.connect(app.config['DATABASE'])
@@ -194,5 +192,11 @@ def send_email():
     flash(u"Wysłano wiadomość")
     return redirect(url_for('show_tree'))
 
-if __name__ == "__main__":
+
+def main():
+    app.config['DATABASE'] = os.path.join(app.root_path, 'trees.db')
+    set_config(app)
     app.run()
+
+if __name__ == "__main__":
+    main()
