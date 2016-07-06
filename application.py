@@ -48,8 +48,7 @@ def register():
         query = '''select *
                 from user
                 where username = ?'''
-        cur = db.execute(query, [username])
-        result = cur.fetchone()
+        result = db.execute(query, [username]).fetchone()
 
         if result:
             error = "Ta nazwa użytkownika jest już zajęta"
@@ -63,8 +62,7 @@ def register():
         query = '''select id
                 from user
                 where username = ?'''
-        cur = db.execute(query, [username])
-        user_id = cur.fetchone()[0]
+        user_id = db.execute(query, [username]).fetchone()[0]
         session['logged_in'] = True
         session['user_id'] = user_id
         session['username'] = username
@@ -129,6 +127,7 @@ def add_person():
                 values (?, ?, ?, ?)'''
         db.execute(query, [first_name, last_name, birth_date, session['user_id']])
         db.commit()
+
         flash(u'Osoba pomyślnie dodana')
         return redirect(url_for('show_tree'))
 
@@ -137,8 +136,7 @@ def add_person():
         query = '''select first_name, last_name
                 from person
                 '''
-        cur = db.execute(query)
-        people = cur.fetchall()
+        people = db.execute(query).fetchall()
         return render_template('add_person.html', error=error, people=people)
 
 @app.route('/edit_person/<person_id>', methods=['GET', 'POST'])
@@ -158,6 +156,7 @@ def edit_person(person_id):
 
         db.execute(query, [first_name, last_name, birth_date, person_id])
         db.commit()
+
         flash("Zmieniono dane")
         return redirect(url_for('show_tree'))
 
@@ -166,8 +165,7 @@ def edit_person(person_id):
                 from person
                 where id = ?
                 '''
-        cur = db.execute(query, [person_id])
-        result = cur.fetchone()
+        result = db.execute(query, [person_id]).fetchone()
         return render_template('edit_person.html', person=result)
 
 @app.route('/delete_person/<person_id>')
@@ -177,6 +175,7 @@ def delete_person(person_id):
             where id = ?'''
     db.execute(query, [person_id])
     db.commit()
+    
     flash(u"Usunięto wpis")
     return redirect(url_for('show_tree'))
 
