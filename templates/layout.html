@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <title>Drzewo genealogiczne</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='font-awesome-4.6.3/css/font-awesome.min.css') }}">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <div class=page>
-    <a href="{{ url_for('show_tree') }}">Stwórz własne drzewo</a>
+    <div class=header-text>
+        <a href="{{ url_for('show_tree') }}">Stwórz własne drzewo</a>
+    </div>
     <div class=metanav>
     {% if not session.logged_in %}
         <a href="{{ url_for('login') }}">Zaloguj się</a> |
         <a href="{{ url_for('register') }}">Stwórz nowe konto</a>
     {% else %}
-        Hello, {{ session.username }} |
+        Witaj, {{ session.username }} |
         <a href="{{ url_for('logout') }}">Wyloguj się</a>
     {% endif %}
     </div>

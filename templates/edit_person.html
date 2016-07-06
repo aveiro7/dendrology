@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
+    <div class=main-content>
     <form method=post action="{{ url_for('edit_person', person_id=person.id) }}">
     <ul>
         <li>
@@ -19,4 +20,5 @@
         </li>
     </ul>
     </form>
+    </div>
 {% endblock %}

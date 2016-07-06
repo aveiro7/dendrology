@@ -2,8 +2,11 @@
 {% block body %}
     {% if session.logged_in %}
 
-        <a href="{{ url_for('add_person') }}"><button>Dodaj nowy wpis</button></a>
+        <div class=sidebar>
+            <a href="{{ url_for('add_person') }}"><button>Dodaj nowy wpis</button></a>
+        </div>
 
+        <div class=main-content>
         {% for p in people %}
             <ul>
                 <li>{{p.first_name}}</li>
@@ -17,8 +20,11 @@
         {% else %}
             Wygląda na to, że nie masz jeszcze żadnych wpisów w drzewie.
         {% endfor %}
+        </div>
 
     {% else %}
-        <h2>Proszę, zaloguj się albo stwórz nowe konto</h2>
+        <div class=main-content>
+            <h2>Proszę, zaloguj się albo stwórz nowe konto</h2>
+        </div>
     {% endif %}
 {% endblock %}

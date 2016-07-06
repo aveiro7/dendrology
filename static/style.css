@@ -1,0 +1,94 @@
+a {
+    text-decoration: none;
+    color: darkgray;
+}
+
+a:hover {
+    color: gray;
+}
+
+.metanav {
+    float: right;
+    margin-top: 10px;
+    color: gray;
+    margin-right: 40px;
+}
+
+.header-text {
+    height: 45px;
+    width: 100%;
+    background: lightgreen;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.header-text a {
+    margin-left: 120px;
+    letter-spacing: 3px;
+    color: green;
+    font-size: 24pt;
+    margin-top: 20px;
+}
+
+.sidebar {
+    position: absolute;
+    top: 75px;
+    bottom: 0;
+    width: 200px;
+    /*background: lime;*/
+    /*opacity: 0.5;*/
+    align-content: center;
+}
+
+.sidebar button {
+    margin-left: 40px;
+    margin-top: 100px;
+    height: 40px;
+    margin-bottom: 20px;
+}
+
+.main-content {
+    margin-left: 250px;
+    margin-top: 100px;
+}
+
+body {
+    margin: 0px 0px 0px 0px;
+}
+
+ul {
+    list-style: none;
+}
+
+.error { 
+    background: #d5ecae; 
+    padding: 0.5em; 
+    width: 428px;
+}
+
+label {
+    padding: 8px; 
+}
+
+li {
+    margin-bottom: 12px;
+}
+
+input {
+    float: right;
+}
+
+.form {
+    width: 410px;
+}
+
+.flash {
+    background: #d5ecae; 
+    padding: 0.5em;
+    border: 1px solid #AACD6E; 
+    margin-left: 200px;
+    width: 250px;
+    float: left;
+    margin-top: 35px;
+    text-align: center
+}

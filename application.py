@@ -51,7 +51,7 @@ def register():
         result = db.execute(query, [username]).fetchone()
 
         if result:
-            error = "Ta nazwa użytkownika jest już zajęta"
+            error = u"Ta nazwa użytkownika jest już zajęta"
             return render_template('register.html', error=error)
         
         query = '''insert into user (username, password)
@@ -86,13 +86,13 @@ def login():
         result = db.execute(query, [username]).fetchone()
         
         if result is None:
-            error = "Nie ma takiego użytkownika"
+            error = u"Nie ma takiego użytkownika"
             return render_template('login.html', error=error)
 
         user_id, pwd = result
 
         if password != pwd:
-            error = "Hasło jest nieprawidłowe"
+            error = u"Hasło jest nieprawidłowe"
             return render_template('login.html', error=error)
 
         session['logged_in'] = True
@@ -175,7 +175,7 @@ def delete_person(person_id):
             where id = ?'''
     db.execute(query, [person_id])
     db.commit()
-    
+
     flash(u"Usunięto wpis")
     return redirect(url_for('show_tree'))
 

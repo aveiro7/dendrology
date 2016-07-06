@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
+    <div class=main-content>
     {% if session.logged_in %}
         <form method=post action="{{ url_for('add_person') }}">
         <ul>
@@ -16,4 +17,5 @@
         <a href="{{ url_for('register') }}">Zarejestruj się</a>
 
     {% endif %}
+    </div>
 {% endblock %}
